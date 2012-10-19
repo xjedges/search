@@ -1,0 +1,241 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+img {
+  border: 0;
+  vertical-align: top;
+}
+ul,
+li {
+  list-style-type: none;
+}
+button,
+a {
+  cursor: pointer;
+}
+i,
+em,
+cite {
+  font-style: normal;
+}
+#searchBox {
+  position: relative;
+  width: 450px;
+}
+#searchBox .queryInput {
+  position: absolute;
+  height: 40px;
+  width: 360px;
+  text-indent: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #b9e3ff;
+  box-shadow: inset 1px 1px 5px #aaaaaa;
+  outline: none;
+}
+#searchBox .queryInput:focus {
+  border-color: #ffff99;
+  background: #ffffcc;
+}
+#searchBox .queryBtn {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  display: inline-block;
+  height: 38px;
+  line-height: 38px;
+  text-align: center;
+  width: 75px;
+  border-radius: 5px;
+  background: #73c5f8;
+  border: 1px solid #42b1f6;
+  box-shadow: inset 0 0 5px #a4d9fa;
+  color: #086097;
+  font-size: 16px;
+  text-shadow: 1px 1px 0px #d4edfd;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  margin-left: 15px;
+}
+#searchBox .queryBtn:hover {
+  box-shadow: 0 0 5px #129df3;
+}
+#searchBox .suggestBox {
+  position: absolute;
+  top: 50px;
+  z-index: 10;
+  width: 360px;
+  display: none;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px #aaaaaa;
+}
+#searchBox .suggestBox.show {
+  display: block;
+}
+#searchBox .suggestBox:hover {
+  display: block;
+}
+#searchBox .suggestBox li {
+  margin: 10px;
+  padding: 5 10px;
+}
+#searchBox .suggestBox li.cur,
+#searchBox .suggestBox li:hover {
+  background: #ffff99;
+  border-radius: 5px;
+}
+#searchBox .spell {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  background: #b9e3ff;
+  border-radius: 10px;
+  padding: 0 8px;
+  cursor: pointer;
+  margin: 2px 5px 2px 0;
+  font-size: 10px;
+  color: #636875;
+  display: none;
+}
+#searchBox .spell.show {
+  display: inline-block;
+}
+.option #saveBtn {
+  cursor: pointer;
+  display: inline-block;
+  height: 38px;
+  line-height: 38px;
+  text-align: center;
+  width: 75px;
+  border-radius: 5px;
+  background: #73c5f8;
+  border: 1px solid #42b1f6;
+  box-shadow: inset 0 0 5px #a4d9fa;
+  color: #086097;
+  font-size: 16px;
+  text-shadow: 1px 1px 0px #d4edfd;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  float: right;
+  margin: 40px 20px 0 0;
+}
+.option #saveBtn:hover {
+  box-shadow: 0 0 5px #129df3;
+}
+.option .panel {
+  padding-top: 60px;
+}
+.option .opt {
+  position: relative;
+  margin: 15px 20px;
+  font-size: 12px;
+  color: #636875;
+}
+.option .opt.select select {
+  position: absolute;
+  right: 0;
+  top: 1px;
+}
+.option .opt.checkbox input {
+  position: absolute;
+  right: 0;
+  top: 1px;
+}
+.option .opt.text input {
+  position: absolute;
+  right: 0;
+  top: 0px;
+  width: 25px;
+}
+.option .opt.array .filter {
+  background: #eee;
+  padding: 5px;
+  border-radius: 10px;
+}
+.option .opt.array .filter .wrap {
+  max-height: 150px;
+  overflow-y: auto;
+}
+.option .opt.array .filter .wrap::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+  background: transparent !important;
+}
+.option .opt.array .filter .wrap::-webkit-scrollbar-thumb {
+  background: #aaaaaa !important;
+  border-radius: 3px !important;
+}
+.option .opt.array .filter .wrap::-webkit-scrollbar-corner {
+  display: none !important;
+}
+.option .opt.array .filter li {
+  position: relative;
+  border-radius: 10px;
+}
+.option .opt.array .filter li input {
+  text-indent: 0.5em;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+}
+.option .opt.array .filter li .deleteBtn {
+  position: absolute;
+  right: 2px;
+  top: 1px;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background: #73c5f8;
+  text-align: center;
+  line-height: 14px;
+  color: #ffffff;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  display: none;
+}
+.option .opt.array .filter li:hover {
+  background: #ccc;
+}
+.option .opt.array .filter li:hover .deleteBtn {
+  display: block;
+  cursor: pointer;
+}
+.option .opt.array .filter li.active {
+  background: #ffff99;
+}
+.option .opt.array .filter .addBtn {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background: #73c5c8;
+  text-align: center;
+  line-height: 14px;
+  color: #ffffff;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  width: 100%;
+  cursor: pointer;
+}
+.searchHistory .panel {
+  padding-top: 80px;
+}
+.searchHistory .historyList {
+  margin: 0 20px;
+  font-size: 12px;
+  color: #636875;
+}
+.searchHistory .historyList li {
+  border-radius: 10px;
+  text-indent: 10px;
+  cursor: pointer;
+}
+.searchHistory .historyList li:hover {
+  background: #ccc;
+}

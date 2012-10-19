@@ -1,0 +1,135 @@
+@import "common";
+@import "component";
+
+body{background:@bgColor; height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
+
+#menu{
+	.subWindow(); left:250px; width:250px; z-index:10; box-shadow:5px 0 5px rgba(0,0,0,.2);
+}
+.tabPanel{
+	.panel{display:none;}
+	&.searchHistory .tabBtn{.sideButton("History",@white,40px,60px,14px,60px,@grey)}
+	&.option .tabBtn{.sideButton("option",@white,40px,60px,14px,0,@grey)}
+	&.show{
+		.tabBtn:before{
+			background: -moz-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+			background: -webkit-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+			box-shadow:none;
+		}
+		.tabBtn{
+			z-index:100;
+		}
+		.panel{display:block;}
+	}
+}
+
+#searchBox{
+	position:absolute; top:15px; left:20px; 
+}
+#leftFrame{
+	width:500px;
+	background:@white; position:absolute; left:0; height:100%; .transition(all,0.3s); z-index:100; border-right:1px solid #ddd;
+	&.hide{
+		left:-460px;
+	}
+	#topFrame{
+		height:90px;
+	}
+
+	#resultsView{
+		padding-right:20px; margin:0 15px 0 25px; overflow-y: scroll; .scrollbar();
+	}
+	
+	#pluginSite{
+		margin-bottom:20px;
+		li{
+			padding:0 8px; float:left; margin:2px 5px 2px 0;
+			.button(@green,auto,auto,12px,10px);
+			&.cur{.button(@yellow,auto,auto,12px,10px);}
+		}
+		&:after{content:""; display:block; clear:both;}
+	}
+	#results{
+		.relatedSearch{
+			margin-bottom:20px;
+			li{
+				padding:0 8px; float:left; margin:2px 5px 2px 0;
+				.button(@grey1,auto,auto,12px,10px);
+			}
+			&:after{content:""; display:block; clear:both;}
+		}
+		.result{
+			margin-bottom:20px; position:relative;
+
+			.title{
+				.transition(all,0.2s);
+				.ellipsis(390px);font-size:16px; line-height:25px; color:@grey2;cursor:pointer;
+				&:hover{text-shadow:0 0 1px @grey2;}
+			}
+
+			.description{margin:8px 0 8px 30px; line-height:20px; font-size:11px; color:@grey2;}
+			.displayUrl{
+				.ellipsis(280px); margin-left:30px; font-size:12px; color:@golden;cursor:pointer;
+				&:hover{text-shadow:0 0 1px @golden;}
+			}
+
+			em{color:@highlight;}
+			.previewBtn{
+				.button(@green,30px,10px,12px,3px);
+				margin-left:10px;
+			}
+			.siteIcon{
+				width:16px; height:16px; margin:5px 5px 0 0;
+			}
+
+			&.readed{
+				em{color:inherit;}
+				.previewBtn{
+					.button(@grey1,30px,10px,12px,3px);
+				}
+			}
+			&.cur{
+				em{color:@highlight;}
+				.title{
+					padding:0 8px;
+					background:@yellow;
+					border-radius:10px;
+				}
+				.previewBtn{
+					.button(@yellow,30px,10px,12px,3px);
+				}
+			}
+			
+		}
+	}
+	
+}
+
+
+#preview{
+	padding:0 15px 0 25px;
+	.subWindow();
+		z-index:99;
+
+	.closeBtn{
+		.sideButton("Min",@white,40px,60px,16px,0,@grey);
+	}
+	.maxBtn{
+		.sideButton("Max",@white,40px,60px,16px,60px,@grey)
+	}
+	.iframe{
+		height:100%; width:100%;
+		border:none;
+		.scrollbar(transparent,0px);
+	}
+		
+	.topBar{
+		position:absolute; background:@white; width:40px; height:100%; top:0; right:0; .transition(all,0.3s);
+		box-shadow:inset 5px 0 5px rgba(0,0,0,.2);
+		&:hover{
+			 top:-30px;
+		}
+	}
+	.title{white-space:nowrap;overflow:hidden;text-align:right; margin-right:50px; color:@grey2}
+	.url{white-space:nowrap;overflow:hidden; text-align:right; margin-right:50px; color:@golden}
+}

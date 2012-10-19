@@ -1,0 +1,64 @@
+@import "common";
+@import "component";
+
+body{font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
+#topbar{position:fixed; background:@white; z-index:2; top:0; width:100%; height:70px; }
+#gallery{
+	position:relative; top:60px; display:block;
+	li{position:absolute;background:@grey1; border-radius :3px; box-shadow:0 1px 3px @grey; cursor:pointer;}
+	.title{font-size:12px;}
+	.info{font-size:10px;}
+	.magnify{box-shadow:0 0 10px @grey2;}
+}
+.filters{
+	text-align:left;
+	.panel{
+		padding-top:60px;
+	}
+	.opt{
+		position:relative; margin:15px 20px; font-size:12px; color:@grey2;
+		&.select{
+			select{position:absolute; right:0; top:1px;}
+		}
+	}
+	#filterSearchBtn{.button(@blue,75px,38px,16px,5px); float:right; margin:40px 20px 0 0;}
+	#filterResetBtn{.button(@blue,75px,38px,16px,5px); float:right; margin:40px 20px 0 0;}
+}
+
+
+
+
+
+#searchBox{
+	position:absolute; top:15px; left:60px;
+}
+
+.subWindow1(){
+	position:absolute;
+	left:-300px;
+	background:@white;
+	height:100%; 
+	.transition(all,0.3s);
+	&.show{
+		left:0px;
+	}
+}
+
+#menu{.subWindow1();top:0px; z-index:3; width:300px; position:fixed; background:@white; height:100%; box-shadow:5px 5px 5px rgba(0,0,0,.2);}
+.tabPanel{
+	.panel{display:none;}
+	&.searchHistory .tabBtn{.sideButton("History",@white,40px,60px,14px,120px,@grey)}
+	&.option .tabBtn{.sideButton("Option",@white,40px,60px,14px,60px,@grey)}
+	&.filters .tabBtn{.sideButton("Filters",@white,40px,60px,14px,0px,@grey)}
+	&.show{
+		.tabBtn:before{
+			background: -moz-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+			background: -webkit-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+			box-shadow:none;
+		}
+		.tabBtn{
+			z-index:100;
+		}
+		.panel{display:block;}
+	}
+}

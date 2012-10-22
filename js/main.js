@@ -128,6 +128,8 @@ function main(){
             {name:"Google",url:"http://www.google.com.hk/search?q=%s",target:"newTab"},
             {name:"My Bing Image",url:"image.html#%s",target:"preview"},
             {name:"My Bing Video",url:"video.html#%s",target:"preview"},
+            {name:"Gallery",url:"http://127.0.0.1/~xiejun/gallery/",target:"preview"},
+            {name:"Reader",url:"http://127.0.0.1/~xiejun/Reader/",target:"preview"},
         ]);
         resultsView.append(pluginSite);
     }

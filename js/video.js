@@ -1,7 +1,7 @@
 var JSON=Json();
 var data=new Data();
-//window.onload=main;
-debug({W:500,H:300},main);
+window.onload=main;
+// debug({W:500,H:300},main);
 function main(){
 	var body=$("body")
 	var filters=Filters({

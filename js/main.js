@@ -129,7 +129,7 @@ function main(){
             {name:"My Bing Image",url:"image.html#%s",target:"preview"},
             {name:"My Bing Video",url:"video.html#%s",target:"preview"},
             {name:"Gallery",url:"http://127.0.0.1/~xiejun/gallery/",target:"preview"},
-            {name:"Reader",url:"http://127.0.0.1/~xiejun/Reader/",target:"preview"},
+            {name:"Reader",url:"http://127.0.0.1/~xiejun/Reader/2dpaper.html",target:"newTab"},
         ]);
         resultsView.append(pluginSite);
     }

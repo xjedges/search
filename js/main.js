@@ -125,7 +125,7 @@ function main(){
             {name:"Baidu Image",url:"http://www.baidu.com/search/error.html#%s",target:"preview"},
             {name:"Bing Image",url:"http://cn.bing.com/images/search?q=%s",target:"preview"},
             {name:"Baidu",url:"http://www.baidu.com/s?wd=%s",target:"preview"},
-            {name:"Google",url:"http://www.google.com.hk/search?q=%s",target:"newTab"},
+            {name:"Google",url:"https://www.google.fr/#q=%s",target:"newTab"},
             {name:"My Bing Image",url:"image.html#%s",target:"preview"},
             {name:"My Bing Video",url:"video.html#%s",target:"preview"},
             {name:"Gallery",url:"http://127.0.0.1/~xiejun/gallery/",target:"preview"},

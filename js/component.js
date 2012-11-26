@@ -1,3 +1,34 @@
+//--------------------------------------------- Loader
+function Loader(){
+    var self=$("div",{id:"loader"});
+    var loadingImg=$("img",{cls:"loadingImg",src:"images/loading.gif"});
+    var nextBtn=$("div",{cls:"nextBtn",text:"Loading Next"})
+    self.append(
+        loadingImg,
+        nextBtn
+    )
+    var state=false
+    self.onclick=function(){
+        if(state){
+            state=false
+            nextBtn.hide()
+            loadingImg.show()
+            searchBox.gett();
+        }
+    }
+    self.start=function(){
+        loadingImg.show()
+        nextBtn.hide()
+    }
+    self.loadNext=function(){
+        state=true
+        nextBtn.show()
+    }
+    self.end=function(){
+        loadingImg.hide()
+    }
+    return self;
+}
 //--------------------------------------------- Menu
 function Menu(subMenus){
     var self=$("div",{id:"menu"});
@@ -155,7 +186,6 @@ function Item(id,name,type,value,format){
     }
     return self;
 }
-
 //--------------------------------------------- Option
 function Option(setting){
     var self=$("div");
@@ -174,11 +204,9 @@ function Option(setting){
         }
     };
     function saveData(){
-        // DD("saved")
         for(var i in UI){
             data[UI[i].id]=UI[i].getValue();
         }
-        // JJ(data)
         window.localStorage.setItem("option",JSON.stringify(data));
         window.location.reload();
     }
@@ -197,8 +225,9 @@ function Option(setting){
     return self;
 }
 //--------------------------------------------- SearchBox
-function SearchBox(option,callback,callback1){
+function SearchBox(callback,callback1){
     var self=$("div",{id:"searchBox"});
+    var box=$("div",{cls:"box"})
     var queryInput=$("input",{cls:"queryInput"});
     var queryBtn=$("div",{cls:"queryBtn",text:"Search"});
     var suggestBox=$("ul",{cls:"suggestBox"});
@@ -207,7 +236,14 @@ function SearchBox(option,callback,callback1){
     self.offset=0;
     var handle;
     var domain;
-    self.append(queryInput,queryBtn,spell,suggestBox);
+    self.append(
+        box.append(
+            queryInput,
+            queryBtn,
+            spell,
+            suggestBox
+        )
+    );
     queryBtn.onclick=function(){
         self.get(queryInput.value);
     };
@@ -226,7 +262,7 @@ function SearchBox(option,callback,callback1){
                 keyboard("Character",e) || 
                 keyboard("BackSpace",e)  || 
                 keyboard("Spacebar",e) ){
-                
+
                 suggestBox.clear();
                 handle=setTimeout(function(){
                     data.getAutoFill(queryInput.value,option.get("language"),function(){
@@ -240,6 +276,7 @@ function SearchBox(option,callback,callback1){
                                 };
                                 suggestBox.append(li);
                             }
+                            suggestBox.addClass("show");
                         }
                     });
                 },200);
@@ -287,6 +324,7 @@ function SearchBox(option,callback,callback1){
     self.init=function(){
         var index=location.href.search("#");
         if(index<0){
+            self.addClass("main")
             domain=location.href+"#";
         }else{
             domain=location.href.substring(0,index+1);
@@ -296,9 +334,9 @@ function SearchBox(option,callback,callback1){
     };
     self.get=function(queryWord){
         if(queryWord!=""){
-
+            self.removeClass("main")
             window.location=domain+queryWord;
-            self.queryword=queryWord;
+            self.queryword=queryWord
             self.offset=0;
             callback.apply(self);
 
@@ -312,10 +350,78 @@ function SearchBox(option,callback,callback1){
                     }
                 });
             }
+        }else{
+            self.addClass("main")
         }
     };
     self.gett=function(){
-        callback1.apply(self);
+        if(queryInput.value!=""){
+            callback1.apply(self);
+        }
     };
     return self;
+}
+//--------------------------------------------- Filters
+function Filters(setting){
+    var self=$("div");
+    var data={};
+    for(var i in setting){
+        data[i]="All";
+    }
+    var UI={};
+    self.getValue=function(){
+        var value="";
+        for(var i in UI){
+            if(UI[i].getValue()!="All"){
+                value+=i+":"+UI[i].getValue()+"+";
+            }
+        }
+        value=value.substring(0,value.length-1);
+        return value;
+    }
+    self.init=function(){
+        var search=$("div",{id:"filterSearchBtn",text:"Search"});
+        var reset=$("div",{id:"filterResetBtn",text:"Reset"});
+        for(var i in setting){
+            var item=Item(i,setting[i].name,setting[i].type,data[i],setting[i].format);
+            UI[i]=item;
+            self.append(item);
+        }
+        search.onclick=function(){
+            searchBox.get(searchBox.queryword);
+        };
+        reset.onclick=function(){
+            for(var i in UI){
+                UI[i].setValue("All");
+            }
+        }
+        self.append(search,reset);
+    };
+    return self;
+};
+//--------------------------------------------- ResultsView
+function ResultsView(){
+    var self=$("div",{id:"resultsView"});
+    var scrollState=false;
+    self.resize=function(){
+        self.height(body.height()-100);
+    };
+    self.onscroll=function(){
+        if(!scrollState && self.scrollTop>0){
+            scrollState=true
+            self.addClass("scroll")
+        }else if(scrollState && self.scrollTop==0){
+            scrollState=false
+            self.removeClass("scroll")
+        }
+        if(self.scrollTop==self.scrollHeight-self.height()){
+            if(option.get("autoLoadNext")){
+                searchBox.gett();
+                loader.start();
+            }else{
+                loader.loadNext();
+            }
+        }
+    };
+    return self
 }

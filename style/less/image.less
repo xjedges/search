@@ -1,15 +1,28 @@
 @import "common";
 @import "component";
 
-body{font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
+body{height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
 #topbar{position:fixed; background:@white; z-index:2; top:0; width:100%; height:70px; }
 #gallery{
-	position:relative; top:60px; display:block;
+	position:relative; display:block;
 	li{position:absolute;background:@grey1; border-radius :3px; box-shadow:0 1px 3px @grey; cursor:pointer;}
 	.title{font-size:12px;}
 	.info{font-size:10px;}
-	.magnify{box-shadow:0 0 10px @grey2;}
+	.magnify{box-shadow:0 0 10px @grey2; z-index:3;}
 }
+#resultsView{
+	margin:90px 10px 0 40px;
+	overflow-y: scroll; .scrollbar();
+	&.scroll{
+		&:before{
+			position:fixed; top:80px; left:-5%;
+			content:""; width:110%; height:8px;
+			background: -moz-radial-gradient(center -20%, cover, rgba(0,0,0,0.2), rgba(255,255,255,0));
+			background: -webkit-radial-gradient(center -20%, cover, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0) 80%);
+		}
+	}
+}
+
 .filters{
 	text-align:left;
 	.panel{
@@ -30,7 +43,7 @@ body{font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
 
 
 #searchBox{
-	position:absolute; top:15px; left:60px;
+	position:absolute; top:20px; left:60px;
 }
 
 .subWindow1(){

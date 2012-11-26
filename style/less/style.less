@@ -24,7 +24,7 @@ body{background:@bgColor; height:100%; overflow: hidden; font-size:16px; font-fa
 }
 
 #searchBox{
-	position:absolute; top:15px; left:20px; 
+	position:absolute; top:20px; left:20px; 
 }
 #leftFrame{
 	width:500px;
@@ -38,6 +38,14 @@ body{background:@bgColor; height:100%; overflow: hidden; font-size:16px; font-fa
 
 	#resultsView{
 		padding-right:20px; margin:0 15px 0 25px; overflow-y: scroll; .scrollbar();
+		&.scroll{
+			&:before{
+				position:absolute; top:80px; left:-5%;
+				content:""; width:110%; height:8px;
+				background: -moz-radial-gradient(center -20%, cover, rgba(0,0,0,0.2), rgba(255,255,255,0));
+				background: -webkit-radial-gradient(center -20%, cover, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0) 80%);
+			}
+		}
 	}
 	
 	#pluginSite{

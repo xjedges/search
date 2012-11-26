@@ -1,9 +1,69 @@
 var JSON=Json();
 var data=new Data();
-window.onload=main;
-// debug({W:500,H:300},main);
+// window.onload=main;
+debug({W:200,H:300},main);
 function main(){
-	var body=$("body")
+	body=$("body")
+    option=Option({
+        language:{
+            name:"Language",
+            type:"select",
+            value:"zh-CN",
+            format:[
+                {name:"China",value:"zh-CN"},
+                {name:"Taiwan",value:"zh-TW"},
+                {name:"Hong Kong",value:"zh-HK"},
+                {name:"Unite State",value:"en-US"},
+                {name:"France",value:"fr-FR"}
+            ]
+        },
+        contentControl:{
+            name:"Content Control",
+            type:"select",
+            value:"Moderate",
+            format:[
+                {name:"Off",value:"Off"},
+                {name:"Moderate",value:"Moderate"},
+                {name:"Strict",value:"Strict"}
+            ]
+        },
+        showSpellCorrect:{
+            name:"Show Spell Correct",
+            type:"checkbox",
+            value:true
+        },
+        showSuggestQuery:{
+            name:"Show Suggest Query",
+            type:"checkbox",
+            value:true
+        },
+        autoLoadNext:{
+            name:"Auto Load Next",
+            type:"checkbox",
+            value:false
+        },
+        displayCount:{
+            name:"Display Count",
+            type:"text",
+            value:10
+        }
+    });
+    searchBox=SearchBox(
+    	function(){
+	        searchHistory.insert(this.queryword);
+	        results.clear();
+	        loader.start();
+	        data.getResult("Image",{Query:this.queryword,ImageFilters:filters.getValue(),$skip:this.offset,$top:this.count,Market:option.get("language"),Adult:option.get("contentControl")},function(data){
+	            results.setData(data.d.results);
+                loader.end();
+	        });
+	    },function(){
+	    	data.getResult("Image",{$skip:this.count*++this.offset},function(data){
+	            results.setData(data.d.results);
+                loader.end();
+	    	});
+    	}
+    );
 	var filters=Filters({
 		Color:{
             name:"Color",
@@ -59,45 +119,6 @@ function main(){
             ]
         }
 	})
-    var option=Option({
-        language:{
-            name:"Language",
-            type:"select",
-            value:"zh-CN",
-            format:[
-                {name:"China",value:"zh-CN"},
-                {name:"Taiwan",value:"zh-TW"},
-                {name:"Hong Kong",value:"zh-HK"},
-                {name:"Unite State",value:"en-US"},
-                {name:"France",value:"fr-FR"}
-            ]
-        },
-        contentControl:{
-            name:"Content Control",
-            type:"select",
-            value:"Moderate",
-            format:[
-                {name:"Off",value:"Off"},
-                {name:"Moderate",value:"Moderate"},
-                {name:"Strict",value:"Strict"}
-            ]
-        },
-        showSpellCorrect:{
-            name:"Show Spell Correct",
-            type:"checkbox",
-            value:true
-        },
-        showSuggestQuery:{
-            name:"Show Suggest Query",
-            type:"checkbox",
-            value:true
-        },
-        displayCount:{
-            name:"Display Count",
-            type:"text",
-            value:10
-        }
-    });
     var searchHistory=SearchHistory();
     var menu=Menu([
 		{
@@ -114,164 +135,26 @@ function main(){
             panel:searchHistory,
         }
     ]);
-	var results=Results();
-    var searchBox=SearchBox(option,
-    	function(){
-	        searchHistory.insert(this.queryword);
-	        results.clear();
-	        
-	        data.getResult("Image",{Query:this.queryword,ImageFilters:filters.getValue(),$skip:this.offset,$top:this.count,Market:option.get("language"),Adult:option.get("contentControl")},function(data){
-	            results.setData(data.d.results)
-	        });
-	    },function(){
-	    	data.getResult("Image",{$skip:this.count*++this.offset},function(data){
-	            results.setData(data.d.results);
-	        });
-    });
+	var results=Gallery(Pic);
+    var resultsView=ResultsView()
+    var loader=Loader();
 	body.append(
 		menu,
 		$("div",{id:"topbar"}).append(
 			searchBox
 		),
-		results
+		resultsView.append(
+			results,
+			loader
+		)
 	);
     searchBox.init()
-	function Results(){
-		//-------------------------------------------------------------- 变量
-		var self		= $("ul",{id:"gallery"});
-		var pad			= 10;
-		var mgn			= 50;
-		var picMgnX		= 10;
-		var picMgnY		= 10;
-		var accumulateX	= pad;
-		var accumulateY	= pad;
-		var W			= document.documentElement.clientWidth-pad*2-mgn;
-		var H			= document.documentElement.clientHeight-pad*2-mgn;
-		var num			= Math.floor(W/180);
-		var row			= Math.floor(H/140);
-		var loading		= false;
-		var picsAll		= [];//全部图片对象
-		var picsDo		= [];//正处理图片对象
-		var picsLeft	= [];//剩余图片对象
-		var eleList		= [];//DOM对象队列
-		self.curPic		= null;
-		//-------------------------------------------------------------- 初始
-		self.css({marginLeft:40});
-		//-------------------------------------------------------------- 事件
-		window.onresize=function(){self.resize()};
-		window.onscroll=function(){
-			if(!loading){
-				if(self.scrollHeight<body.scrollHeight){
-                    loading=true;
-                    searchBox.gett();
-                }
-            }
-		};
-		//-------------------------------------------------------------- 方法
-		self.resize=function(){
-			var w=document.documentElement.clientWidth-pad*2-mgn;
-			var h=document.documentElement.clientHeight-pad*2-mgn;
-			if(w!=W){
-				W		= w;
-				num		= Math.floor(W/180);
-				eleList		= [];
-				accumulateY	= pad;
-				self.manage(picsAll);
-			}else if(h>H){
-				if(!loading)
-                    if(self.scrollHeight<body.scrollHeight)
-                        searchBox.gett();
-			}
-			H			= h;
-			row			= Math.floor(H/140);
-		};
-		self.clear=function(){
-            while (self.hasChildNodes()) {
-                self.removeChild(self.lastChild);
-            }
-			picsAll		= [];
-			picsLeft	= [];
-			eleList		= [];
-			accumulateY	= pad;
-		}
-		self.setData=function(data){
-			var pics=self.addPic(data);				          //新图片对象
-			picsAll=picsAll.concat(pics);					//储存
-			pics=picsLeft.concat(pics);						//新图片对象与未处理的图片对象合并
-			picsLeft=[];
-			self.manage(pics);
-			loading=false;
-		}
-		self.addPic=function(data){
-			var pics=[];
-			for(var d in data){
-				var pic=Pic(data[d]);
-				pics.push(pic);
-			};
-			return pics;
-		};
-		self.manage=function(pics){
-			var doingRow=Math.floor(pics.length/num);
-
-			picsDo=pics.slice(0,doingRow*num);						//生成将处理的图片对象
-			picsLeft=pics.slice(doingRow*num);						//储存未处理的图片对象
-
-			for(var i=0;i<doingRow;i++){
-				var curPics=picsDo.slice(i*num,(i+1)*num);
-
-				self.arrage(curPics);
-			};
-			for(var i in eleList){
-				if(!eleList[i].isInDom){
-					self.append(eleList[i]);
-					eleList[i].isInDom=true;
-				};
-			};
-			self.css({height:accumulateY});
-			eleList=[];
-            if(self.scrollHeight<body.clientHeight){
-                getData();
-            };
-		};
-        function getData(){
-            if(!loading){
-                if(self.scrollHeight<body.scrollHeight){
-                    loading=true;
-                    searchBox.gett();
-                }
-            }
-        }
-		self.arrage=function(pics){
-			var ratioAll=0;											//横向信息
-			var ratioArr=[];										//长宽比
-			var mgn=picMgnX;
-			
-			for(var i in pics){										//获取长宽	
-				var pic=pics[i];
-				ratioArr.push(pic.radio);
-				ratioAll+=(pic.radio);
-			};
-
-			var rowH=Math.floor((W-num*mgn*2)/ratioAll);			//计算高度
-			var imgsW=0;											//计算宽度
-			for(var i in pics){
-				var imgW=Math.floor(rowH*ratioArr[i]);
-				imgsW+=imgW;
-				pics[i].setWH(imgW,rowH);
-				eleList.push(pics[i]);
-			};
-
-			mgn=Math.floor((W-imgsW)/num/2);						//计算间隔
-
-			accumulateX=pad;										//累计横向位置
-			for(var i in pics){
-				pics[i].setXY(accumulateX+mgn,accumulateY+picMgnY);
-				accumulateX+=mgn*2+pics[i].W;
-			};
-			accumulateY+=picMgnY*2+rowH;							//累计纵向位置
-		};
-		return self;
-	};
+    resize();
+    window.onresize=resize;
+    function resize(){
+    	resultsView.resize();
+        results.resize();
+    }
 	function Pic(data){
 		//-------------------------------------------------------------- 变量
 		var self		= $("li");
@@ -326,17 +209,17 @@ function main(){
 			var y=self.offsetTop;
 			var offsetX=-(self.W-pad)/2;
 			var offsetY=-(self.H-pad)/2;
-			var windowW=document.documentElement.clientWidth;
-			var windowH=document.documentElement.clientHeight;
-			var threshold=20;
+			var boundaryW=self.parent().width()
+			var boundaryH=self.parent().height()
+			var threshold=10;
 			
-			if((x+offsetX)<threshold){offsetX=-threshold}
-			else if((x+self.W-offsetX)>(windowW-threshold)){offsetX=-self.W+threshold};
+			if((x+offsetX)<0){offsetX=threshold}
+			else if((x+self.W-offsetX)>(boundaryW)){offsetX=-self.W-threshold};
 			
-			if((y+offsetY)<threshold){offsetY=-threshold}
-			//else if((y+self.H-offsetY)>(windowH-threshold)){offsetY=-self.H+threshold};
+			if((y+offsetY)<0){offsetY=threshold}
+			else if((y+self.H-offsetY)>(boundaryH)){offsetY=-self.H};
 			
-			self.css({width:self.W*2-pad*2,margin:[offsetY,0,0,offsetX],zIndex:3});
+			self.css({width:self.W*2-pad*2,margin:[offsetY,0,0,offsetX]});
 			img.css({width:self.W*2-pad*2,height:self.H*2-pad*2});
 			self.addClass("magnify");
 			title.show();
@@ -345,7 +228,7 @@ function main(){
 			
 		};
 		self.restore=function(){
-			self.css({width:self.W-pad*2,margin:0,zIndex:1});
+			self.css({width:self.W-pad*2,margin:0});
 			img.css({width:self.W-pad*2,height:self.H-pad*2});
 			self.removeClass("magnify")
 			if(detailState){
@@ -363,43 +246,6 @@ function main(){
 		self.setXY=function(x,y){
 			self.css({top:y,left:x});
 		};
-		return self;
-	};
-	function Filters(setting){
-		var self=$("div");
-		var data={};
-		for(var i in setting){
-			data[i]="All";
-		}
-		var UI={};
-		self.getValue=function(){
-			var value="";
-			for(var i in UI){
-				if(UI[i].getValue()!="All"){
-					value+=i+":"+UI[i].getValue()+"+";
-				}
-			}
-			value=value.substring(0,value.length-1);
-			return value;
-		}
-		self.init=function(){
-			var search=$("div",{id:"filterSearchBtn",text:"Search"});
-			var reset=$("div",{id:"filterResetBtn",text:"Reset"});
-	        for(var i in setting){
-	            var item=Item(i,setting[i].name,setting[i].type,data[i],setting[i].format);
-	            UI[i]=item;
-	            self.append(item);
-	        }
-	        search.onclick=function(){
-	            searchBox.get(searchBox.queryword);
-	        };
-	        reset.onclick=function(){
-	        	for(var i in UI){
-	        		UI[i].setValue("All");
-	        	}
-	        }
-	        self.append(search,reset);
-	    };
 		return self;
 	};
 };

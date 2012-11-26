@@ -1,23 +1,13 @@
 var JSON=Json();
 var data=new Data();
-window.onload=main;
-// debug({W:500,H:300},main);
-function Loading(){
-    var self=$("img",{cls:"loading",src:"images/loading.gif"});
-    self.start=function(){
-        self.css({display:"block"})
-    }
-    self.end=function(){
-        self.css({display:"none"})
-    }
-    return self;
-}
+//window.onload=main;
+ debug({W:200,H:300},main);
 function main(){
     //--------------------------------------------- Global
     var windowW;
     var windowH;
-    var body=$("body");
-    var option=Option({
+    body=$("body");
+    option=Option({
         language:{
             name:"Language",
             type:"select",
@@ -70,6 +60,11 @@ function main(){
             type:"checkbox",
             value:true
         },
+        autoLoadNext:{
+            name:"Auto Load Next",
+            type:"checkbox",
+            value:false
+        },
         displayCount:{
             name:"Display Count",
             type:"text",
@@ -81,8 +76,28 @@ function main(){
             value:[]
         }
     });
+    searchBox=SearchBox(
+        function(){
+            searchHistory.insert(this.queryword);
+            results.clear();
+            loader.start();
+            data.getResult("Web",{Query:this.queryword,$skip:this.offset,$top:this.count,Market:option.get("language"),Adult:option.get("contentControl")},function(data){
+                results.setData(data.d.results);
+                loader.end();
+            });
+            if(option.get("showRelatedLinks")){
+                data.getResult("RelatedSearch",{Query:this.queryword,Market:option.get("language")},function(data){
+                    results.setRelatedSearch(data.d.results);
+                });
+            }
+        },function(){
+            data.getResult("Web",{$skip:this.count*++this.offset},function(data){
+                results.setData(data.d.results);
+                loader.end();
+            });
+        }
+    );
     var searchHistory=SearchHistory();
-
     var menu=Menu([
         {
             name:"option",
@@ -98,26 +113,7 @@ function main(){
     var previewBlackFilter=UrlFilter(option.get("previewBlackFilter"));
     
     var results=Results();
-    var searchBox=SearchBox(option,
-        function(){
-            searchHistory.insert(this.queryword);
-            results.clear();
-            loading.start();
-            data.getResult("Web",{Query:this.queryword,$skip:this.offset,$top:this.count,Market:option.get("language"),Adult:option.get("contentControl")},function(data){
-                results.setData(data.d.results);
-                loading.end();
-            });
-            if(option.get("showRelatedLinks")){
-                data.getResult("RelatedSearch",{Query:this.queryword,Market:option.get("language")},function(data){
-                    results.setRelatedSearch(data.d.results);
-                });
-            }
-        },function(){
-            data.getResult("Web",{$skip:this.count*++this.offset},function(data){
-                results.setData(data.d.results);
-            });
-    });
-    var loading=Loading();
+    var loader=Loader();
     var preview=Preview();
     var resultsView=ResultsView()
     if(option.get("showPluginSite")){
@@ -133,7 +129,7 @@ function main(){
         ]);
         resultsView.append(pluginSite);
     }
-    //--------------------------------------------- MainFrame
+    //--------------------------------------------- MainFrames
     body.append(
         menu,
         $("div",{id:"leftFrame"}).append(
@@ -141,8 +137,8 @@ function main(){
                 searchBox
             ),
             resultsView.append(
-                loading,
-                results
+                results,
+                loader
             )
         ),
         preview
@@ -156,16 +152,6 @@ function main(){
         windowH=document.documentElement.clientHeight;
         preview.resize();
         resultsView.resize();
-    }
-    function ResultsView(){
-        var self=$("div",{id:"resultsView"});
-        self.resize=function(){
-            self.height(document.documentElement.clientHeight-100);
-        };
-        self.onscroll=function(){
-            if(self.scrollTop==self.scrollHeight-self.height())searchBox.gett();
-        };
-        return self
     }
     //--------------------------------------------- ResultsWrap
     function Results(){

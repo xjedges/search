@@ -234,12 +234,11 @@ HTMLElement.prototype.html=function(str){
     }
 };
 HTMLElement.prototype.text=function(str){
-    // this.innerHTML= str.replace(/</g,"&lt;").replace(/>/g,"&gt;")
     if(str){
         this.appendChild(document.createTextNode(str));
         return this;
     }else{
-        return this.innerHTML;
+        return (this.childNodes.length>0 && this.childNodes[0].nodeType==Node.TEXT_NODE)?this.childNodes[0].nodeValue:""
     }
 };
 //---------------------------------------- width height top left
